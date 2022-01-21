@@ -1,6 +1,4 @@
 import { Component } from 'react';
-import tmi from 'tmi.js';
-import axios from 'axios';
 import { io } from 'socket.io-client';
 
 class App extends Component {
@@ -11,21 +9,19 @@ class App extends Component {
       character: {}
     };
 
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+    const twitchChannel = params.channel.toLowerCase();
+
     this.socket = io('https://twitch-gacha-server.herokuapp.com/');
-    this.socket.on('marviuz', msg => {
-      console.log(msg);
+    this.socket.on(twitchChannel, msg => {
       this.setState({
         character: msg
       }, () => this.slide());
     });
 
-    this.getRandomChar = this.getRandomChar.bind(this);
     this.delay = this.delay.bind(this);
     this.slide = this.slide.bind(this);
-  }
-
-  getRandomChar() {
-    return axios.get('http://localhost:3000/api/get-random-character');
   }
 
   delay(time) {
@@ -79,4 +75,5 @@ class App extends Component {
     );
   }
 }
+
 export default App;
